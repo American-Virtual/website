@@ -1,0 +1,19 @@
+'use strict';var _typeof=typeof Symbol==='function'&&typeof Symbol.iterator==='symbol'?function(obj){return typeof obj}:function(obj){return obj&&typeof Symbol==='function'&&obj.constructor===Symbol&&obj!==Symbol.prototype?'symbol':typeof obj};/**
+*  UI-REFACTORED
+*    FROM --> ./legacy-web/src/main/js/apps/common/js/jquery/aacom/plugins/aaDropdownPanel.js
+*    TO   --> ./webapps/shared-web/src/main/assets/js/legacy/plugins/aa-dropdown-panel.js
+**//*
+ * aaDropdownPanel.js
+ */(function($){/* Cache a combined list of all dropdown elements, so each doc click isn't a DOM search */var $dropdowns=$([]);// Create a document click handler that will close any open dropdowns:
+$(document).bind('click',function(e){if($(e.target).parents('[data-behavior~="dropdown"]').length===0&&!$(e.target).is('[data-behavor~="dropdown-trigger"]')){$dropdowns.find('[data-behavior~="dropdown-panel"]:visible').hide();$dropdowns.find('[data-behavior~="dropdown-trigger"]:visible').removeClass('is-active')}e.stopPropagation()});var methods={init:function init(options){// Add this set to our combined cache:
+$dropdowns=$dropdowns.add(this);$dropdowns.find('[data-behavior~="dropdown-panel"]:visible').hide();// Create some defaults, extending them with any options that were provided
+var settings=$.extend({},options);return this.each(function(){// dropdown plugin code here
+var $this=$(this);if(settings.width){$this.find('[data-behavior~="dropdown-panel"]').css('min-width',settings.width);$this.find('[data-behavior~="dropdown-panel"]').css('width',settings.width)}if(settings.maxHeight){$this.find('[data-behavior~="dropdown-panel"]').css('max-height',settings.maxHeight)}/* NOTE: 2 ways to get id:
+                var id = this.id;
+                var id = $this.attr('id');
+                */// Only proceed with click-event handler if the plugin
+// has not already been initialized on this given element:
+if($this.data('initialized'))return;else $this.data('initialized',true);var $trigger=$this.find('[data-behavior~="dropdown-trigger"]'),$panel=$this.find('[data-behavior~="dropdown-panel"]'),$close=$this.find('[data-behavior~="dropdown-close"]');$trigger.addClass('js-dropdown-trigger').parents('[data-behavior~="dropdown-wrapper"]').addClass('js-dropdown-wrapper').parents('[data-behavior~="dropdown"]').addClass('js-dropdown');$panel.addClass('js-dropdown-panel');$close.addClass('js-dropdown-close');$trigger.click(function(e){e.stopPropagation();e.preventDefault();$dropdowns.not($this).find('[data-behavior~="dropdown-panel"]:visible').hide();$dropdowns.not($this).find('[data-behavior~="dropdown-trigger"]').removeClass('is-active');$trigger.toggleClass('is-active');$panel.toggle();$panel.find('a, input[type="text"], button, [tabindex=0], select').filter(':visible').first().focus()});$close.click(function(e){e.preventDefault();$this.find('[data-behavior~="dropdown-trigger"]').removeClass('is-active');$this.find('[data-behavior~="dropdown-panel"]').hide()})})},show:function show(){return this.each(function(){$(this).find('[data-behavior~="dropdown-panel"]:hidden').show()})},hide:function hide(){return this.each(function(){$(this).find('[data-behavior~="dropdown-panel"]:visible').hide()})},toggle:function toggle(){return this.each(function(){$(this).find('[data-behavior~="dropdown-panel"]').toggle().css('z-index','9999');alert($(this).css('z-index'))})}};$.fn.dropdown=function(method){// If you're running IE7, don't bother with the dropdowns.
+if($('html').hasClass('lt-ie8')){return}// Method calling logic
+if(methods[method]){return methods[method].apply(this,Array.prototype.slice.call(arguments,1))}else if((typeof method==='undefined'?'undefined':_typeof(method))==='object'||!method){return methods.init.apply(this,arguments)}else{$.error('Method '+method+' does not exist on jQuery.dropdown')}}})(jQuery);jQuery(document).ready(function(){jQuery('[data-behavior~="dropdown"]').dropdown()});
+//# sourceMappingURL=aa-dropdown-panel.min.js.map

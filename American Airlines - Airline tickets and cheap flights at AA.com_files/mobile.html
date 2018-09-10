@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!--tealium tag management - mobile.webview ut4.0.201805240200, Copyright 2018 Tealium.com Inc. All Rights Reserved.-->
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
+    <title>Tealium JSON Sync</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+        try {
+            // on load send data from iframe to parent
+            (function(w, g, j){
+                if(typeof w[g] === 'undefined'){
+                    w[g] = {};
+                }
+                j = w[g];
+                j.parent_url = document.referrer;
+                j.url = document.referrer;
+                j.ref_array = (j.url.match(/(https?:\/\/)(.[^/]+)/) || []);
+                j.parent_protocol = (j.ref_array[1] || "https://");
+                j.parent_domain = (j.ref_array[2] || "example.com");
+                j.ut_path = "//tags.tiqcdn.com/utag/aa/json-sync/prod/" || "//tags.tiqcdn.com/utag/aa/json-sync/prod";
+                j.ut_version = "201805240200" || "201701120142";
+                j.account = (j.ut_path.split("/")[4] || "aa");
+                j.profile = (j.ut_path.split("/")[5] || "json-sync");
+                j.ls_name = j.account + "_" + j.profile;
+                j.thirty_minutes = (30 * 60 * 1000);
+                j.utag_v = function(s) {
+                    s = document.createElement('script');
+                    s.setAttribute('src', 'https://tags.tiqcdn.com/utag/tiqapp/utag.v.js?a=' + j.account + '/' + j.profile + '/' + j.ut_version + '&cb=' + j.now);
+                    document.body.appendChild(s);
+                }
+                j.get_local_storage = j.get_local_storage || function() {
+                    j.now = (new Date()).getTime();
+                    j.ls = JSON.parse(localStorage.getItem(j.ls_name)) || {};
+                    j.session_info = JSON.parse(localStorage.getItem(j.ls_name + "_si"));
+                    if(!j.session_info){
+                        j.utag_v();
+                        j.session_info = {session_start: j.now,last_event: j.now};
+                    }
+                    if ((j.now - j.session_info.last_event) < j.thirty_minutes) {
+                        j.session_info.last_event = j.now;
+                    } else {
+                        j.utag_v();
+                        j.session_info = {
+                            session_start: j.now,
+                            last_event: j.now
+                        };
+                        j.ls = {};
+                        localStorage.removeItem(j.ls_name);
+                        localStorage.removeItem(j.ls_name + "_si");
+                    }
+                }
+                j.set_local_storage = j.set_local_storage || function(data) {
+                    localStorage.setItem(j.ls_name, data);
+                    localStorage.setItem(j.ls_name + "_si", JSON.stringify(j.session_info));
+                }
+                j.get_local_storage();
+                parent.postMessage(JSON.stringify({
+                    data: j.ls,
+                    session_info: j.session_info
+                }), j.parent_protocol + j.parent_domain);
+                // listen for parent sending data to iframe
+                j.eventMethod = w.addEventListener ? "addEventListener" : "attachEvent";
+                j.json_eventer = w[j.eventMethod].bind(w);
+                j.messageEvent = j.eventMethod == "attachEvent" ? "onmessage" : "message";
+                j.json_eventer(j.messageEvent, function(data) {
+                    j.set_local_storage(data.data);
+                }, false);
+            }(window, '_json_sync'));
+        } catch (e) {
+            if (console && console.log) {
+                console.log("error in json-sync iframe code: " + e);
+            }
+        }
+    </script>
+
+
+
+</body></html>
